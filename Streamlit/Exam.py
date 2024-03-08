@@ -1,6 +1,7 @@
 # exam.py
 import streamlit as st
 import Graphs  # This imports the graphs module you've created
+import Predictions  # This imports the predictions module you've created
 
 # Function to display the homepage content
 def show_homepage():
@@ -10,12 +11,14 @@ def show_homepage():
 # Main function that runs the app
 def main():
     st.sidebar.title("Navigation")
-    page = st.sidebar.selectbox("Choose a page", ["Homepage", "Generate Graphs"])
+    page = st.sidebar.selectbox("Choose a page", ["Homepage", "Generate Graphs","AI Training and predicitons"])
 
     if page == "Homepage":
         show_homepage()
     elif page == "Generate Graphs":
         Graphs.show_graphs()  # This calls a function from graphs.py to display its content
+    elif page == "AI Training and predicitons":
+        Predictions.show_Predictions()
 
 if __name__ == "__main__":
     main()
