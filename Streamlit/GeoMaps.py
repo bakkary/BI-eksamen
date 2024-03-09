@@ -54,8 +54,10 @@ def show_Geomaps():
     m = folium.Map(location=center, zoom_start=4)
 
     geojson_paths = {
-        'Europe': '../GeoMaps/EU map test.json', 'North America': '../GeoMaps/NA Map.json',
-        'South America': '../GeoMaps/SA Map.json', 'Africa': '../GeoMaps/Africa Map.json',
+        'Europe': '../GeoMaps/EU Map.json', 
+        'North America': '../GeoMaps/NA Map.json',
+        'South America': '../GeoMaps/SA Map.json', 
+        'Africa': '../GeoMaps/Africa Map.json',
         'Asia': '../GeoMaps/Asia Map.json'
     }
     geojson_path = geojson_paths.get(selected_continent)
