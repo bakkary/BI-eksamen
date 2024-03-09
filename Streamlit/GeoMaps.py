@@ -79,4 +79,3 @@ def show_Geomaps():
         ).add_to(m)
 
     st_folium(m, width=725, height=500)
-x
