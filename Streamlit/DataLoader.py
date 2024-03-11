@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import streamlit as st
 
-@st.cache  # Standard caching decorator
+@st.cache_data  # Standard caching decorator
 def load_data():
     """Load and return the DataFrame from the pickle file."""
     file_path = os.path.join(os.getcwd(), 'dataframe.pkl')
