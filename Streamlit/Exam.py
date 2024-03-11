@@ -9,7 +9,7 @@ def show_homepage():
     st.title('Homepage')
     st.write('This Project is an analasys of pollution data in different countries and some mesurements for different categories of pollution.')
     
-    st.write("Made by: Tobias, XiaoXuan, Andreas og Chris")
+    st.write("Made by: Tobias, Xiaoxuan, Andreas og Chris")
 
 # Main function that runs the app
 def main():
