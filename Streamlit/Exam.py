@@ -9,16 +9,16 @@ def show_homepage():
     st.title('Homepage')
     st.write('This Project is an analasys of pollution data in different countries and some mesurements for different categories of pollution.')
     
-    st.write("Made by: Tobias, Xiaoxuan, Andreas og Chris")
+    st.write("Made by: Tobias, XiaoXuan, Andreas og Chris")
 
 # Main function that runs the app
 def main():
     st.sidebar.title("Navigation")
-    page = st.sidebar.selectbox("Choose a page", ["Homepage", "Generate Graphs","AI Training and predicitons","GeoMaps","DataPrep"])
+    page = st.sidebar.selectbox("Choose a page", ["Homepage", "Data Visualisation","AI Training and predicitons","GeoMaps","DataPrep"])
 
     if page == "Homepage":
         show_homepage()
-    elif page == "Generate Graphs":
+    elif page == "Data Visualisation":
         Graphs.show_graphs()  
     elif page == "AI Training and predicitons":
         Predictions.show_Predictions()
