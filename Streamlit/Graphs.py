@@ -65,12 +65,14 @@ def show_graphs():
     # Combine 'C40_True' and 'C40_False' into a single column
     df['C40_Status'] = df['C40_True'].map({1: 'True', 0: 'False'})
 
-    # Plot the bar chart
-    plt.figure(figsize=(10, 8))
-    sns.barplot(data=df, x='City', y='AQI Value', hue='C40_Status', palette=['blue', 'orange'])
-    plt.title('AQI values for different cities')
-    plt.xlabel('City')
-    plt.ylabel('AQI Value')
-    plt.xticks(rotation=90)
-    st.pyplot(plt)  # Display the plot in Streamlit
+    # Get 50 random entries
+    df_sampled = df.sample(n=50)
 
+    # Plot the bar chart with swapped axes
+    plt.figure(figsize=(10, 8))
+    sns.barplot(data=df_sampled, x='AQI Value', y='City', hue='C40_Status', palette=['red', 'green'], dodge=False)
+    plt.title('AQI values for different cities')
+    plt.xlabel('AQI Value')
+    plt.ylabel('City')
+    plt.xticks(rotation=90)
+    st.pyplot(plt)  # Display the plot in Jupyter Notebook
