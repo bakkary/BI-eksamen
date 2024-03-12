@@ -16,20 +16,20 @@ def show_homepage():
 # Main function that runs the app
 def main():
     st.sidebar.title("Navigation")
-    page = st.sidebar.selectbox("Choose a page", ["Homepage", "Data Visualisation","AI Training and predicitons","GeoMaps","DataPrep","placeholder"])
+    page = st.sidebar.selectbox("Choose a page", ["Homepage","DataPrep","Data Visualisation","GeoMaps","AI Training and predicitons"])
 
     if page == "Homepage":
         show_homepage()
+    elif page == "DataPrep":
+        DataPrep.DataPreparation()    
     elif page == "Data Visualisation":
         Graphs.show_graphs()  
+    elif page == "GeoMaps":
+        Geomaps.show_Geomaps()        
     elif page == "AI Training and predicitons":
         Predictions.show_Predictions()
-    elif page == "GeoMaps":
-        Geomaps.show_Geomaps()
-    elif page == "DataPrep":
-        DataPrep.DataPreparation()
-    elif page == "placeholder":
-        placeholder.show_placeholder()
+    
+
 
 
 
