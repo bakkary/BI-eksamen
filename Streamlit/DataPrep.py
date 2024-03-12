@@ -170,4 +170,19 @@ def DataPreparation():
 
     df = df_merged
     
+
+    st.write('taking a look at the count for the data we can see that we have about 150k entires wich are alot of data')
+    with st.expander("Transformed Dataset Count"):
+        st.write(df.count())
+
+    st.write('we are gonna check for copies')
+    with st.expander("Transformed Dataset Duplicates"):
+        st.write(df.duplicated().sum())
+
+    st.write('we have a lot of copies so we will drop them')
+    # Drop duplicates
+    df.drop_duplicates(inplace=True)
+    st.write(df.duplicated().sum())
+    
+            
     st.write('lastly we can transform the data to a pickle file that we will be working way thoughout the set')
