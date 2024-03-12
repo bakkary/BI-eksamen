@@ -149,6 +149,13 @@ def DataPreparation():
     with st.expander("Unique Values of the Continent"):
         st.write(df_merged['Continent'].unique())
 
+
+    st.write('we do have some duplicates in the dataset, so we will drop them')
+    # Drop duplicates
+    df_merged.drop_duplicates(inplace=True)
+    st.expander('total count after duplicates removed')
+    st.write(df_merged.count())    
+
     st.write('lastly we can do some 1 hot encoding for the C40 column')
     # Convert 'C40' from strings "True"/"False" to actual booleans
     df_merged['C40'] = df_merged['C40'].map({'True': True, 'False': False})
