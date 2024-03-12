@@ -31,7 +31,7 @@ def DataPreparation():
 
     st.write('After that, we will merge the two datasets to get a better overview of the data, but before that, we will do some data cleaning and data wrangling to make the data more readable and understandable.')
 
-    st.write('First, we will do some correction mapping to make sure the name lines up with the other dataset.')
+    st.write('First, we will do some correction mapping for the names to make sure the name of the diffrent coutnries lines up with the other dataset.')
 
     correction_mapping = {
         "United States of America": "USA",
