@@ -6,31 +6,46 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
-import pandas as pd
+import joblib
 from DataLoader import load_data
 
-@st.cache_data
-def load_data_cached():
-    return load_data()
+def load_selected_features(selected_features_path=None):
+    if selected_features_path is not None:
+        return joblib.load(selected_features_path)
+    else:
+        return None
 
-def show_Predictions():
+def show_Predictions(selected_features=None):
     st.title('AI Predictions - Focusing on C40 Membership')
-    train_model_interactive()
+    st.write('For Training this model, we can either use the preprocessed features made with RFECV or select our own features.')
+    st.write('After that we can select our test size and train the model.')
 
-def train_model_interactive():
-    df = load_data_cached()
+    # Add a button to use selected features from the preprocessed model
+    use_preprocessed_features = st.button('Use Preprocessed Features')
+    if use_preprocessed_features:
+        selected_features = load_selected_features('C:/Users/chz/Documents/GitHub/BI-eksamen/Streamlit/selected_features.joblib')
+        if selected_features is None:
+            st.error('Error loading preprocessed features. Please make sure the file path is correct.')
+            return
+        else:
+            st.success('Preprocessed features loaded successfully.')
+
+    if selected_features is None:
+        df = load_data()
+        selected_features = st.multiselect('Select features for training', df.columns)
+        if not selected_features:
+            st.warning('Please select at least one feature to proceed.')
+            return
+
+    train_model_interactive(selected_features)
+
+def train_model_interactive(selected_features):
+    df = load_data()
     st.write("Data Loaded Successfully")
 
     if st.checkbox('Show raw data'):
-        st.write(df.sample(50))  # Show a random sample of 50 rows for quick inspection
+        st.write(df.sample(50))
 
-    all_features = list(df.drop(['C40_True', 'C40_False'], axis=1).columns)  # Exclude target variable from features
-    selected_features = st.multiselect('Select features for training', all_features, default=['City', 'AQI Value'])
-    if not selected_features:
-        st.warning('Please select at least one feature to proceed.')
-        return
-
-    # Directly use 'C40_True' as the binary target variable
     X = df[selected_features]
     y = df['C40_True']
 
@@ -57,10 +72,6 @@ def train_model_interactive():
         st.write(f"Model trained successfully with accuracy: {accuracy}")
         st.text("Classification Report:")
         st.text(report)
-
-        # If you wish to predict the membership of a new city, you would collect the city's data,
-        # preprocess it as per your training data, and then use `rf_pipeline.predict_proba(new_city_data)`
-        # to get the probabilities of C40 membership.
 
 # This call starts the app
 show_Predictions()

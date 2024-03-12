@@ -27,7 +27,7 @@ def main():
     elif page == "GeoMaps":
         Geomaps.show_Geomaps()        
     elif page == "AI Training and predicitons":
-        Predictions.show_Predictions()
+        Predictions.Show_Predictions()
     
 
 
