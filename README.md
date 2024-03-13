@@ -8,7 +8,7 @@ we want to base the assessment on the members of the initiative and then explore
 
 we want to do this by using the random forest algorithm to predict the likelihood of a city to join the initiative based on the data that we have available.
 
-since we dont have multiple measurements on each city in our dataset we want to compare the cities to the members of the initiative and then use the random forest algorithm to predict the likelihood of the other cities to join the initiative.
+since we don't have multiple measurements on each city in our dataset we want to compare the cities to the members of the initiative and then use the random forest algorithm to predict the likelihood of the other cities to join the initiative.
 
 our project should be able to answer the following questions:
 
