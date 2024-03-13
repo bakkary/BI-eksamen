@@ -27,7 +27,7 @@ def main():
     elif page == "GeoMaps":
         Geomaps.show_Geomaps()    
     elif page == "Linear Regression":
-        Regression.show_Regression()         
+        Regression.show_Regression()    
     elif page == "AI Training and predicitons":
         Predictions.Show_Predictions()
     
