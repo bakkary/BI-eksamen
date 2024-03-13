@@ -98,8 +98,12 @@ def Show_Predictions():
 
     st.session_state.test_size = st.slider('Test set size (%)', min_value=10, max_value=50, value=20, step=5)
 
+    trained_model = None  # Define trained_model variable
+
     if st.button('Train Model'):
         trained_model = train_model(df, st.session_state['selected_features'])
+        # Update session state with trained model
+        st.session_state['trained_model'] = trained_model
 
     # Prediction
     st.title('Predict City Eligibility for C40 Membership')
@@ -114,22 +118,32 @@ def Show_Predictions():
 
     # Make prediction
     if st.button('Predict Eligibility'):
-        input_df = pd.DataFrame([input_data])
-        prediction_proba = trained_model.predict_proba(input_df)
-        prediction = trained_model.predict(input_df)
-        if prediction[0]:
-            st.success('The city is eligible to join C40!')
-        else:
-            st.error('The city is not eligible to join C40.')
-
-        st.write(f'Probability of being eligible: {prediction_proba[0][1]}')
+        if 'trained_model' not in st.session_state:
+            st.error("Please train the model first.")
+            return
         
-        # Display feature importances
-        feature_importances = trained_model.named_steps['classifier'].feature_importances_
-        importance_df = pd.DataFrame({'Feature': st.session_state['selected_features'], 'Importance': feature_importances})
-        importance_df = importance_df.sort_values(by='Importance', ascending=False)
-        st.write('Feature Importances:')
-        st.write(importance_df)
+        trained_model = st.session_state['trained_model']
+        input_df = pd.DataFrame([input_data])
+        
+        try:
+            prediction_proba = trained_model.predict_proba(input_df)
+            prediction = trained_model.predict(input_df)
+            if prediction[0]:
+                st.success('The city is eligible to join C40!')
+            else:
+                st.error('The city is not eligible to join C40.')
+
+            st.write(f'Probability of being eligible: {prediction_proba[0][1]}')
+            
+            # Display feature importances
+            feature_importances = trained_model.named_steps['classifier'].feature_importances_
+            importance_df = pd.DataFrame({'Feature': st.session_state['selected_features'], 'Importance': feature_importances})
+            importance_df = importance_df.sort_values(by='Importance', ascending=False)
+            st.write('Feature Importances:')
+            st.write(importance_df)
+        
+        except ValueError:
+            st.warning("Some input values are missing, which may affect the accuracy of the prediction.")
 
 if __name__ == '__main__':
     Show_Predictions()
