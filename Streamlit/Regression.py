@@ -18,6 +18,8 @@ def show_Regression():
 
     multiple_linear_regression(df)
 
+    linear_regression_predictions(df)
+
     
 
 # AQI value
@@ -84,8 +86,38 @@ def multiple_linear_regression(df):
     st.write(f"R-squared (R2 ): {r2}")
 
 
-# figure 2 X
-    
+# figure 2
+def linear_regression_predictions(df):
+    st.title('Linear Regression Predictions')
+    st.write("This section demonstrates the predictions made by the linear regression model on new data points.")
+
+    # Train the model on your training data
+    X = df[['City Latitude', 'City Longitude']]
+    y = df['AQI Value']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1, test_size=0.15)
+
+    linreg = LinearRegression()  # Initialize the Linear Regression model
+    linreg.fit(X_train, y_train)  # Train the model
+
+    # Example values for City Latitude and AQI Value
+    latitude_value = 40.7128  # Example latitude value for a city
+    aqi_value_value = 50  # Example AQI Value
+
+    # Predict using both features
+    regression_predicted = linreg.predict([[latitude_value, aqi_value_value]])
+    st.write("Predicted AQI Value:", regression_predicted[0])
+
+    # Visualizing the regression predictions
+    fig3, ax3 = plt.subplots()
+    ax3.set_xlabel('City Latitude')
+    ax3.set_ylabel('AQI Value')
+    ax3.scatter(X_test['City Latitude'], y_test, color='blue', label='Actual AQI Value')
+    ax3.scatter([latitude_value], regression_predicted, color='red', label='Predicted AQI Value')
+    ax3.legend()
+    ax3.set_title('Linear Regression Predictions')
+
+    st.pyplot(fig3)
+
 
 # figure 3 X
     
@@ -107,5 +139,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
