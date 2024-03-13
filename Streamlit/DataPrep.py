@@ -92,6 +92,19 @@ def DataPreparation():
     df_merged.drop(columns=['Comment'], inplace=True)
     df_merged.drop(columns=['Total Scope 1 Emissions (metric tonnes CO2e)'], inplace=True)
     df_merged.drop(columns=['Total Scope 2 Emissions (metric tonnes CO2e)'], inplace=True)
+    df_merged.drop(columns=['Account number'], inplace=True)
+    df_merged.drop(columns=['Organization'], inplace=True)
+    df_merged.drop(columns=['Accounting year'], inplace=True)
+    df_merged.drop(columns=['Boundary'], inplace=True)
+    df_merged.drop(columns=['Protocol'], inplace=True)
+    df_merged.drop(columns=['Increase/Decrease from last year'], inplace=True)
+    df_merged.drop(columns=['Reason for increase/decrease in emissions'], inplace=True)
+    df_merged.drop(columns=['Population year'], inplace=True)
+    df_merged.drop(columns=['GDP Currency'], inplace=True)
+    df_merged.drop(columns=['GDP Source'], inplace=True)
+    df_merged.drop(columns=['Access'], inplace=True)
+
+
 
     # Convert nulls/NaNs to 'False'
     df_merged['C40'] = df_merged['C40'].fillna('False')
