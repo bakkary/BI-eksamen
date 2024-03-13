@@ -1,33 +1,27 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+from DataLoader import load_data
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
-import numpy as np
-from DataLoader import load_data
+from sklearn.metrics import r2_score, mean_squared_error
 
 def show_Regression():
     st.title('Linear Regression')
     st.write("On this page, we will take a look at the dataset and try to visualize it. We will use the data to create some graphs and see if we can find any patterns or trends.")
 
-    df = load_data()  # Load your DataFrame
+    # Load your DataFrame
+    df = load_data() 
 
-    aqi_value(df)
+    linreg = LinearRegression()
 
-    multiple_linear_regression(df)
-
-    linear_regression_predictions(df)
-
-    
-
-# AQI value
-def aqi_value(df):     
+    # Analysis of air quality in C40 cities using K-means clustering
     st.title('Analysis of air quality in C40 cities using K-means clustering')
-
     feature_cols = ['City Latitude', 'City Longitude']
     X = df[feature_cols]
+
 
     kmeans = KMeans(n_clusters=3, random_state=42)
     kmeans.fit(X)
@@ -52,8 +46,7 @@ def aqi_value(df):
     st.pyplot(fig)
 
 
-# figure 1
-def multiple_linear_regression(df):
+    # figure 1
     st.title('Multiple Linear Regression')
     feature_cols = ['City Latitude', 'City Longitude']
     X = df[feature_cols]
@@ -86,52 +79,28 @@ def multiple_linear_regression(df):
     st.write(f"R-squared (R2 ): {r2}")
 
 
-# figure 2
-def linear_regression_predictions(df):
-    st.title('Linear Regression Predictions')
-    st.write("This section demonstrates the predictions made by the linear regression model on new data points.")
+    # clustering
+    # Let's say we want to cluster the data into 3 groups
+    num_clusters = 3
+    # Initialize the KMeans model
+    kmeans = KMeans(n_clusters=num_clusters)
+    numeric_df = df.select_dtypes(include=['number'])
+    kmeans.fit(numeric_df)
+    # Get the cluster labels assigned to each data point
+    cluster_labels = kmeans.labels_
+    # You can analyze the clusters, e.g., by adding cluster labels to the DataFrame
+    df['Cluster'] = cluster_labels
+    numeric_columns = df.select_dtypes(include=['number']).columns
+    numeric_data = df[numeric_columns]
+    numeric_data
 
-    # Train the model on your training data
-    X = df[['City Latitude', 'City Longitude']]
-    y = df['AQI Value']
-    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1, test_size=0.15)
-
-    linreg = LinearRegression()  # Initialize the Linear Regression model
-    linreg.fit(X_train, y_train)  # Train the model
-
-    # Example values for City Latitude and AQI Value
-    latitude_value = 40.7128  # Example latitude value for a city
-    aqi_value_value = 50  # Example AQI Value
-
-    # Predict using both features
-    regression_predicted = linreg.predict([[latitude_value, aqi_value_value]])
-    st.write("Predicted AQI Value:", regression_predicted[0])
-
-    # Visualizing the regression predictions
-    fig3, ax3 = plt.subplots()
-    ax3.set_xlabel('City Latitude')
-    ax3.set_ylabel('AQI Value')
-    ax3.scatter(X_test['City Latitude'], y_test, color='blue', label='Actual AQI Value')
-    ax3.scatter([latitude_value], regression_predicted, color='red', label='Predicted AQI Value')
-    ax3.legend()
-    ax3.set_title('Linear Regression Predictions')
-
-    st.pyplot(fig3)
-
-
-# figure 3 X
-    
-
-# figure 4 X 
-    
-
-# figure 5
-    
-
-# figure 6
-    
-
-# figure 7
+    #Plot the clusters based on the first two columns (assuming they represent features)
+    plt.scatter(df.iloc[:, 0], df.iloc[:, 1], c=cluster_labels, cmap='viridis')
+    plt.title('KMeans Clustering')
+    plt.xlabel('Feature 1')
+    plt.ylabel('Feature 2')
+    plt.colorbar(label='Cluster')
+    plt.show()
 
 
 def main():
