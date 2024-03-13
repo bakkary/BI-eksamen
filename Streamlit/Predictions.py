@@ -78,21 +78,23 @@ def Show_Predictions():
     method = st.radio("Choose Feature Selection Method:", ('Use Preprocessed Features', 'Select Your Own Features'))
 
     if method == 'Use Preprocessed Features':
-        st.session_state.selected_features = load_selected_features()
-        st.success('Preprocessed features loaded successfully.')
+        st.session_state['selected_features'] = load_selected_features()
+        # Display the selected features loaded from the preprocessed file
+        st.success('Preprocessed features loaded successfully. Selected Features:')
+        st.write(st.session_state['selected_features'])
     elif method == 'Select Your Own Features':
         all_features = list(df.columns)
         all_features.remove('C40_True')  # Assuming 'C40_True' is the target variable
-        st.session_state.selected_features = st.multiselect('Select features for training', all_features, default=['City', 'AQI Value'])
+        st.session_state['selected_features'] = st.multiselect('Select features for training', all_features, default=['City', 'AQI Value'])
 
-    if not st.session_state.selected_features:
+    if not st.session_state['selected_features']:
         st.warning('Please select at least one feature to proceed.')
         return
 
     st.session_state.test_size = st.slider('Test set size (%)', min_value=10, max_value=50, value=20, step=5)
 
     if st.button('Train Model'):
-        train_model(df, st.session_state.selected_features)
+        train_model(df, st.session_state['selected_features'])
 
 if __name__ == '__main__':
     Show_Predictions()

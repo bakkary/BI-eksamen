@@ -1,79 +1,71 @@
-import streamlit as st
+import joblib
 import pandas as pd
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
-from DataLoader import load_data  # Ensure this is correctly implemented
-import joblib
+from sklearn.feature_selection import RFECV
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import f1_score
 
-@st.experimental_memo
-def load_data_cached():
-    return load_data()
+# Load your data here
+# df = ...
 
-@st.experimental_memo
-def load_selected_features(selected_features_path='selected_features.joblib'):
-    return joblib.load(selected_features_path)
+# Drop 'C40_True' from the features since it's the target variable
+X = df.drop(['C40_True', 'C40_False', 'Country', 'City', 'Continent'], axis=1)
+y = df['C40_True']  # Use 'C40_False' as the target variable
 
-def train_model(df, selected_features):
-    X = df[selected_features]
-    y = df['C40_True']
-    
-    test_size = st.session_state.test_size / 100
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
+# Identifying numeric and categorical features
+numeric_features = X.select_dtypes(include=['int64', 'float64']).columns
+categorical_features = X.select_dtypes(exclude=['int64', 'float64']).columns
 
-    numeric_features = [f for f in selected_features if df[f].dtype in ['int64', 'float64']]
-    categorical_features = [f for f in selected_features if df[f].dtype == 'object']
+# Preprocessing pipelines for both numeric and categorical data
+numeric_transformer = Pipeline(steps=[
+    ('imputer', SimpleImputer(strategy='median')),
+    ('scaler', StandardScaler())])
 
-    numeric_transformer = Pipeline(steps=[
-        ('imputer', SimpleImputer(strategy='median')),
-        ('scaler', StandardScaler())])
-    categorical_transformer = Pipeline(steps=[
-        ('imputer', SimpleImputer(strategy='constant', fill_value='missing')),
-        ('onehot', OneHotEncoder(handle_unknown='ignore'))])
+categorical_transformer = Pipeline(steps=[
+    ('imputer', SimpleImputer(strategy='constant', fill_value='missing')),
+    ('onehot', OneHotEncoder(handle_unknown='ignore'))])
 
-    preprocessor = ColumnTransformer(transformers=[
+preprocessor = ColumnTransformer(
+    transformers=[
         ('num', numeric_transformer, numeric_features),
         ('cat', categorical_transformer, categorical_features)])
 
-    rf_pipeline = Pipeline(steps=[('preprocessor', preprocessor),
-                                  ('classifier', RandomForestClassifier(random_state=42))])
+# Apply preprocessing
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
+X_train_preprocessed = preprocessor.fit_transform(X_train)
+X_test_preprocessed = preprocessor.transform(X_test)
 
-    rf_pipeline.fit(X_train, y_train)
-    y_pred = rf_pipeline.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    report = classification_report(y_test, y_pred)
+# Apply RFECV for feature selection
+selector = RFECV(estimator=LogisticRegression(), step=1, cv=5, scoring='f1')
+selector.fit(X_train_preprocessed, y_train)
 
-    st.write(f"Model trained successfully with accuracy: {accuracy}")
-    st.text(report)
+# Increase the minimum number of features to select
+selector.min_features_to_select = 5
 
-def show_Predictions():
-    st.title('AI Predictions - Focusing on C40 Membership')
-    df = load_data_cached()
+# Save the selected feature names
+selected_features = [X.columns[i] for i in range(len(selector.support_)) if selector.support_[i]]
+joblib.dump(selected_features, 'selected_features.joblib')
 
-    if 'selected_features' not in st.session_state:
-        st.session_state.selected_features = None
+# Print the selected features
+print("Selected Features:", selected_features)
 
-    method = st.radio("Choose Feature Selection Method:", ('Use Preprocessed Features', 'Select Your Own Features'))
+# Train the RandomForestClassifier on the selected features
+rf_final = RandomForestClassifier(random_state=42)
+rf_final.fit(selector.transform(X_train_preprocessed), y_train)
 
-    if method == 'Use Preprocessed Features':
-        st.session_state.selected_features = load_selected_features()
-        st.success('Preprocessed features loaded successfully.')
-    else:
-        st.session_state.selected_features = st.multiselect('Select features for training', list(df.drop(['C40_True', 'C40_False'], axis=1).columns), default=['City', 'AQI Value'])
+# Evaluate the model
+y_pred = rf_final.predict(selector.transform(X_test_preprocessed))
+print(f"Model F1-score: {f1_score(y_test, y_pred)}")
+print(classification_report(y_test, y_pred))
 
-    if not st.session_state.selected_features:
-        st.warning('Please select at least one feature to proceed.')
-        return
-
-    # Slider for test size is always shown regardless of selection method
-    st.session_state.test_size = st.slider('Test set size (%)', min_value=10, max_value=50, value=20, step=5)
-
-    if st.button('Train Model'):
-        train_model(df, st.session_state.selected_features)
-
-if __name__ == '__main__':
-    show_Predictions()
+# Save the preprocessor, selector, selected features, and the final model for later use
+joblib.dump(preprocessor, 'preprocessor.joblib')
+joblib.dump(selector, 'selector.joblib')
+joblib.dump(selected_features, 'selected_features.joblib')
+joblib.dump(rf_final, 'rf_final.joblib')
