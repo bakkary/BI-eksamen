@@ -83,14 +83,18 @@ def Show_Predictions():
     method = st.radio("Choose Feature Selection Method:", ('Use Preprocessed Features', 'Select Your Own Features'))
 
     if method == 'Use Preprocessed Features':
-        st.session_state['selected_features'] = load_selected_features()
-        # Display the selected features loaded from the preprocessed file
-        st.success('Preprocessed features loaded successfully. Selected Features:')
+        # Directly specify the four desired features instead of loading and filtering
+        specific_features = ["Total emissions (metric tonnes CO2e)", "Population", "GDP", "​Land area (in square km)"]
+        st.session_state['selected_features'] = specific_features
+        
+        st.success('Specific features selected for analysis:')
         st.write(st.session_state['selected_features'])
+        
     elif method == 'Select Your Own Features':
         all_features = list(df.columns)
         all_features.remove('C40_True')  # Assuming 'C40_True' is the target variable
-        st.session_state['selected_features'] = st.multiselect('Select features for training', all_features, default=['City', 'AQI Value'])
+        selected_features = st.multiselect('Select features for training', all_features, default=['City', 'AQI Value'])
+        st.session_state['selected_features'] = selected_features
 
     if not st.session_state['selected_features']:
         st.warning('Please select at least one feature to proceed.')
@@ -103,9 +107,7 @@ def Show_Predictions():
     if st.button('Train Model'):
         trained_model = train_model(df, st.session_state['selected_features'])
         # Update session state with trained model
-        st.session_state['trained_model'] = trained_model
-
-    # Prediction
+        st.session_state['trained_model'] = trained_model    # Prediction
     st.title('Predict City Eligibility for C40 Membership')
 
     # Input fields based on selected features
