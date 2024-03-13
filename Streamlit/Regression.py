@@ -37,10 +37,33 @@ def show_Regression():
 
     st.pyplot(fig)
 
+# figure 1 X
+    
+
+
+
+# figure 2 X
+    
+
+# figure 3 X
+    
+
+# figure 4 X 
+    
+
+# figure 5
+    
+
+# figure 6
+    
+
+# figure 7
+
+
 def main():
     show_Regression()
 
 if __name__ == "__main__":
     main()
 
-    
+
