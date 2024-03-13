@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 import pandas as pd
 import numpy as np
 from DataLoader import load_data
@@ -78,30 +79,42 @@ def show_Regression():
     st.write(f"Root Mean Squared Error (RMSE): {rmse}")
     st.write(f"R-squared (R2 ): {r2}")
 
+    # Scatterplot
+    st.title('Scatterplot')
+    current_dir = os.path.dirname(__file__)  # Gets the directory where the script is located
+    image_path = os.path.join(current_dir, "screenshots", "pic 1.png")
+    st.image(image_path, caption="Caption for the image", use_column_width=True)
+    st.write("Our error value is: 1.6936110240878405e-13")
+    st.write("We got a test score of 1,0")
 
-    # clustering
-    # Let's say we want to cluster the data into 3 groups
-    num_clusters = 3
-    # Initialize the KMeans model
-    kmeans = KMeans(n_clusters=num_clusters)
-    numeric_df = df.select_dtypes(include=['number'])
-    kmeans.fit(numeric_df)
-    # Get the cluster labels assigned to each data point
-    cluster_labels = kmeans.labels_
-    # You can analyze the clusters, e.g., by adding cluster labels to the DataFrame
-    df['Cluster'] = cluster_labels
-    numeric_columns = df.select_dtypes(include=['number']).columns
-    numeric_data = df[numeric_columns]
-    numeric_data
+    # Linear Regression
+    st.title('Linear Regression ')
+    current_dir = os.path.dirname(__file__)  
+    image_path = os.path.join(current_dir, "screenshots", "pic 3.png")
+    st.image(image_path, caption="Caption for the image", use_column_width=True)
+    st.write("We got a R2 value of 0.0014905377546974297.")
 
-    #Plot the clusters based on the first two columns (assuming they represent features)
-    plt.scatter(df.iloc[:, 0], df.iloc[:, 1], c=cluster_labels, cmap='viridis')
-    plt.title('KMeans Clustering')
-    plt.xlabel('Feature 1')
-    plt.ylabel('Feature 2')
-    plt.colorbar(label='Cluster')
-    plt.show()
+    # 2D clustering
+    st.title('2D Clustering')
+    current_dir = os.path.dirname(__file__)  
+    image_path = os.path.join(current_dir, "screenshots", "pic 4.png")
+    st.image(image_path, caption="Caption for the image", use_column_width=True)
+    st.write("We are testing with 3 clusters. ")
 
+    # 3D clustering
+    st.title('3D clustering')
+    current_dir = os.path.dirname(__file__)  
+    image_path = os.path.join(current_dir, "screenshots", "pic 5.png")
+    st.image(image_path, caption="Caption for the image", use_column_width=True)
+    st.write("The diagram above makes a lot of sense of 3D.")
+
+    # Cluster on the 5 most efficient parameters
+    st.title('Cluster on the 5 most efficient parameters')
+    current_dir = os.path.dirname(__file__)  
+    image_path = os.path.join(current_dir, "screenshots", "pic 6.png")
+    st.image(image_path, caption="Caption for the image", use_column_width=True)
+    st.write("We are testing with 3 clusters. ")
+    st.write("We got a K-means score: 1.7939260566779875e+29, which is a very high score and shows that the clusters is far from eachother.")
 
 def main():
     show_Regression()
