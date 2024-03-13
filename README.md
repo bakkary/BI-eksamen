@@ -22,3 +22,7 @@ we chose the current methodologyy to determine a city's eligibility for the c40 
   
 Theoretical Foundation:  
 we chosse this study since we are all very concered about the climate changes so we want to use maschine learning to make c40 membership a more insightfull and effective strategy to combat the climate problem
+
+
+How to run the project: 
+To run this notebook see the included instructions notebook 
