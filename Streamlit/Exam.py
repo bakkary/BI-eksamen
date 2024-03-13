@@ -3,6 +3,7 @@ import streamlit as st
 import Graphs  # This imports the graphs module you've created
 import Predictions  # This imports the predictions module you've created
 import Geomaps
+import DataPrep
 
 
 # Function to display the homepage content
