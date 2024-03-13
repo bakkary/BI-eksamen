@@ -2,9 +2,9 @@
 import streamlit as st
 import Graphs  # This imports the graphs module you've created
 import Predictions  # This imports the predictions module you've created
-import GeoMaps
+import Geomaps
 import DataPrep
-import placeholder
+
 
 # Function to display the homepage content
 def show_homepage():
@@ -25,7 +25,7 @@ def main():
     elif page == "Data Visualisation":
         Graphs.show_graphs()  
     elif page == "GeoMaps":
-        GeoMaps.show_GeoMaps()        
+        Geomaps.show_Geomaps()        
     elif page == "AI Training and predicitons":
         Predictions.Show_Predictions()
     
