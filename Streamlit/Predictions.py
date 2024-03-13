@@ -12,25 +12,37 @@ import joblib
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Your DataLoader function
-@st.cache_data
+def get_feature_names(column_transformer):
+    """Get feature names from all transformers."""
+    output_features = []
+    for name, pipe, features in column_transformer.transformers_:
+        if name == "remainder":
+            continue
+        transformer = pipe.named_steps.get('onehot', pipe)
+        if hasattr(transformer, 'get_feature_names_out'):
+            feature_names = transformer.get_feature_names_out(features)
+            output_features.extend(feature_names)
+        else:
+            output_features.extend(features)
+    return output_features
+
+@st.cache
 def load_data():
     """Load and return the DataFrame from the pickle file."""
     file_path = os.path.join(os.getcwd(), 'dataframe.pkl')
-    if os.path.exists(file_path):  # Check if the file exists
+    if os.path.exists(file_path):
         return pd.read_pickle(file_path)
     else:
-        st.error('Data file not found. Please check the file path.')  # Show an error if the file is not found
-        return pd.DataFrame()  # Return an empty DataFrame as a fallback
+        st.error('Data file not found. Please check the file path.')
+        return pd.DataFrame()
 
-@st.experimental_memo
-def load_selected_features(selected_features_path='selected_features.joblib'):
-    return joblib.load(selected_features_path)
+@st.cache(allow_output_mutation=True)
+def load_feature_importances(feature_importances_path='feature_importances.joblib'):
+    return joblib.load(feature_importances_path)
 
 def train_model(df, selected_features):
     X = df[selected_features]
     y = df['C40_True']
-    
     test_size = st.session_state.test_size / 100
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
 
@@ -40,8 +52,9 @@ def train_model(df, selected_features):
     numeric_transformer = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy='median')),
         ('scaler', StandardScaler())])
+    
     categorical_transformer = Pipeline(steps=[
-        ('imputer', SimpleImputer(strategy='constant', fill_value='missing')),
+        ('imputer', SimpleImputer(strategy='constant', fill_value='missing')),  # Fill missing values
         ('onehot', OneHotEncoder(handle_unknown='ignore'))])
 
     preprocessor = ColumnTransformer(transformers=[
@@ -52,98 +65,66 @@ def train_model(df, selected_features):
                                   ('classifier', RandomForestClassifier(random_state=42))])
 
     rf_pipeline.fit(X_train, y_train)
-    y_pred = rf_pipeline.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    report = classification_report(y_test, y_pred)
-    conf_matrix = confusion_matrix(y_test, y_pred)
-
-    st.write(f"Model trained successfully with accuracy: {accuracy}")
-    st.text(report)
-
-    # Plotting confusion matrix
-    fig, ax = plt.subplots()
-    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', ax=ax)
-    ax.set_xlabel('Predicted labels')
-    ax.set_ylabel('True labels')
-    ax.set_title('Confusion Matrix')
-    st.pyplot(fig)
     
-    # Save the trained model
-    joblib.dump(rf_pipeline, 'trained_model.joblib')
+    # Adjust this part to correctly map transformed feature names to importances
+    feature_names = get_feature_names(rf_pipeline.named_steps['preprocessor'])
+    feature_importances = rf_pipeline.named_steps['classifier'].feature_importances_
+    importance_df = pd.DataFrame({'Feature': feature_names, 'Importance': feature_importances})
+    importance_df.sort_values(by='Importance', ascending=False, inplace=True)
 
-    return rf_pipeline  # Return the trained model
+    return rf_pipeline, importance_df
 
 def Show_Predictions():
     st.title('AI Predictions - Focusing on C40 Membership')
     df = load_data()
+    feature_importances_df = load_feature_importances()
 
-    if 'selected_features' not in st.session_state:
-        st.session_state['selected_features'] = None
+    selected_features = ["Total emissions (metric tonnes CO2e)", "Population", "GDP", "Land area (in square km)"]
 
-    method = st.radio("Choose Feature Selection Method:", ('Use Preprocessed Features', 'Select Your Own Features'))
+    st.success('Preprocessed features loaded successfully. Selected Features:')
+    st.write(selected_features)
 
-    if method == 'Use Preprocessed Features':
-        st.session_state['selected_features'] = load_selected_features()
-        # Display the selected features loaded from the preprocessed file
-        st.success('Preprocessed features loaded successfully. Selected Features:')
-        st.write(st.session_state['selected_features'])
-    elif method == 'Select Your Own Features':
-        all_features = list(df.columns)
-        all_features.remove('C40_True')  # Assuming 'C40_True' is the target variable
-        st.session_state['selected_features'] = st.multiselect('Select features for training', all_features, default=['City', 'AQI Value'])
-
-    if not st.session_state['selected_features']:
+    if not selected_features:
         st.warning('Please select at least one feature to proceed.')
         return
 
     st.session_state.test_size = st.slider('Test set size (%)', min_value=10, max_value=50, value=20, step=5)
 
-    trained_model = None  # Define trained_model variable
-
     if st.button('Train Model'):
-        trained_model = train_model(df, st.session_state['selected_features'])
-        # Update session state with trained model
+        trained_model, feature_importances_df = train_model(df, selected_features)
         st.session_state['trained_model'] = trained_model
+        # Display the feature importances DataFrame
+        st.write('Feature Importances:', feature_importances_df)
 
-    # Prediction
+        # Confusion Matrix
+        st.subheader('Confusion Matrix')
+        y_pred = trained_model.predict(X_test)
+        cm = confusion_matrix(y_test, y_pred)
+        st.write(cm)
+
+    # Prediction part
     st.title('Predict City Eligibility for C40 Membership')
+    if 'trained_model' in st.session_state:
+        input_data = {}
+        for feature in selected_features:
+            input_data[feature] = st.number_input(f'Enter {feature}:', key=feature)
 
-    # Input fields based on selected features
-    input_data = {}
-    for feature in st.session_state['selected_features']:
-        if pd.api.types.is_numeric_dtype(df[feature]):
-            input_data[feature] = st.number_input(f'Enter {feature}:')
-        elif pd.api.types.is_object_dtype(df[feature]):
-            input_data[feature] = st.text_input(f'Enter {feature}:')
+        if st.button('Predict Eligibility'):
+            trained_model = st.session_state['trained_model']
+            input_df = pd.DataFrame([input_data])
 
-    # Make prediction
-    if st.button('Predict Eligibility'):
-        if 'trained_model' not in st.session_state:
-            st.error("Please train the model first.")
-            return
-        
-        trained_model = st.session_state['trained_model']
-        input_df = pd.DataFrame([input_data])
-        
-        try:
-            prediction_proba = trained_model.predict_proba(input_df)
-            prediction = trained_model.predict(input_df)
-            if prediction[0]:
-                st.success('The city is eligible to join C40!')
-            else:
-                st.error('The city is not eligible to join C40.')
+            try:
+                prediction_proba = trained_model.predict_proba(input_df)
+                prediction = trained_model.predict(input_df)
+                if prediction[0] == 1:
+                    st.success('The city is eligible to join C40!')
+                else:
+                    st.error('The city is not eligible to join C40.')
 
-            st.write(f'Probability of being eligible: {prediction_proba[0][1]}')
-            
-            # Display feature importances
-            feature_importances = trained_model.named_steps['classifier'].feature_importances_
-            importance_df = pd.DataFrame({'Feature': st.session_state['selected_features'], 'Importance': feature_importances})
-            importance_df = importance_df.sort_values(by='Importance', ascending=False)
-            st.write('Feature Importances:')
-            st.write(importance_df)
-        
-        except ValueError:
-            st.warning("Some input values are missing, which may affect the accuracy of the prediction.")
+                st.write(f'Probability of being eligible: {prediction_proba[0][1]:.2f}')
+
+            except ValueError as e:
+                st.error(f"Error in prediction: {e}")
 
 if __name__ == '__main__':
     Show_Predictions()

@@ -4,7 +4,7 @@ import Graphs  # This imports the graphs module you've created
 import Predictions  # This imports the predictions module you've created
 import Geomaps
 import DataPrep
-
+import Regression
 
 # Function to display the homepage content
 def show_homepage():
@@ -16,7 +16,7 @@ def show_homepage():
 # Main function that runs the app
 def main():
     st.sidebar.title("Navigation")
-    page = st.sidebar.selectbox("Choose a page", ["Homepage","DataPrep","Data Visualisation","GeoMaps","AI Training and predicitons"])
+    page = st.sidebar.selectbox("Choose a page", ["Homepage","DataPrep","Data Visualisation","GeoMaps","Linear Regression","AI Training and predicitons"])
 
     if page == "Homepage":
         show_homepage()
@@ -25,7 +25,9 @@ def main():
     elif page == "Data Visualisation":
         Graphs.show_graphs()  
     elif page == "GeoMaps":
-        Geomaps.show_Geomaps()        
+        Geomaps.show_Geomaps()    
+    elif page == "Linear Regression":
+        Regression.show_Regression()         
     elif page == "AI Training and predicitons":
         Predictions.Show_Predictions()
     
