@@ -1,12 +1,38 @@
-import streamlit as st
+# import pandas for structuring the data
 import pandas as pd
-from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
+
+# import numpy for numerical analysis
 import numpy as np
-from DataLoader import load_data
+
+# Visualization
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+import plotly.graph_objs as go
+import plotly.figure_factory as ff
+import plotly.io as pio
+import folium
+from mpl_toolkits.mplot3d import Axes3D
+
+# Machine learning and modeling
+from sklearn.model_selection import train_test_split
+from sklearn import linear_model
+from sklearn.metrics import r2_score
+import sklearn.metrics as sm
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LinearRegression
+import statsmodels.api as sm
+
+# Additional utilities
+import os
+import scipy.cluster.hierarchy as ch
+from scipy.spatial.distance import cdist
+from sklearn.metrics import mean_squared_error
+
 
 def show_Regression():
     st.title('Linear Regression')
@@ -94,7 +120,39 @@ def multiple_linear_regression(df):
     
 
 # figure 5
+
+def kmeans_clustering_figure(df):
+    st.title('KMeans Clustering of Numeric Data')
+
+    # Selecting numeric data for clustering
+    numeric_df = df.select_dtypes(include=['number'])
+
+    # Define the number of clusters
+    num_clusters = 3
+
+    # Initialize and fit the KMeans model
+    kmeans = KMeans(n_clusters=num_clusters, random_state=42)
+    kmeans.fit(numeric_df)
+
+    # Get cluster labels assigned to each row/data point
+    cluster_labels = kmeans.labels_
+
+    # Add cluster labels to the original DataFrame
+    df['Cluster'] = cluster_labels
+
+    # Assuming the first two numeric columns are what you want to plot
+    feature_1 = numeric_df.columns[0]  # Adjust as needed
+    feature_2 = numeric_df.columns[1]  # Adjust as needed
+
+    # Plotting
+    fig, ax = plt.subplots()
+    scatter = ax.scatter(df[feature_1], df[feature_2], c=df['Cluster'], cmap='viridis', label=df['Cluster'])
+    plt.colorbar(scatter, label='Cluster')
+    ax.set_xlabel(feature_1)
+    ax.set_ylabel(feature_2)
+    ax.set_title('KMeans Clustering of Numeric Data')
     
+    st.pyplot(fig)
 
 # figure 6
     
