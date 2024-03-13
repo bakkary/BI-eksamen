@@ -2,7 +2,7 @@
 import streamlit as st
 import Graphs  # This imports the graphs module you've created
 import Predictions  # This imports the predictions module you've created
-import Geomaps
+import GeoMaps
 import DataPrep
 import placeholder
 
@@ -25,7 +25,7 @@ def main():
     elif page == "Data Visualisation":
         Graphs.show_graphs()  
     elif page == "GeoMaps":
-        Geomaps.show_Geomaps()        
+        GeoMaps.show_GeoMaps()        
     elif page == "AI Training and predicitons":
         Predictions.Show_Predictions()
     

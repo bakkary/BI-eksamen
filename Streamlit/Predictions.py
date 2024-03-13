@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 from sklearn.pipeline import Pipeline
@@ -67,6 +67,11 @@ def train_model(df, selected_features):
     ax.set_ylabel('True labels')
     ax.set_title('Confusion Matrix')
     st.pyplot(fig)
+    
+    # Save the trained model
+    joblib.dump(rf_pipeline, 'trained_model.joblib')
+
+    return rf_pipeline  # Return the trained model
 
 def Show_Predictions():
     st.title('AI Predictions - Focusing on C40 Membership')
@@ -94,7 +99,37 @@ def Show_Predictions():
     st.session_state.test_size = st.slider('Test set size (%)', min_value=10, max_value=50, value=20, step=5)
 
     if st.button('Train Model'):
-        train_model(df, st.session_state['selected_features'])
+        trained_model = train_model(df, st.session_state['selected_features'])
+
+    # Prediction
+    st.title('Predict City Eligibility for C40 Membership')
+
+    # Input fields based on selected features
+    input_data = {}
+    for feature in st.session_state['selected_features']:
+        if pd.api.types.is_numeric_dtype(df[feature]):
+            input_data[feature] = st.number_input(f'Enter {feature}:')
+        elif pd.api.types.is_object_dtype(df[feature]):
+            input_data[feature] = st.text_input(f'Enter {feature}:')
+
+    # Make prediction
+    if st.button('Predict Eligibility'):
+        input_df = pd.DataFrame([input_data])
+        prediction_proba = trained_model.predict_proba(input_df)
+        prediction = trained_model.predict(input_df)
+        if prediction[0]:
+            st.success('The city is eligible to join C40!')
+        else:
+            st.error('The city is not eligible to join C40.')
+
+        st.write(f'Probability of being eligible: {prediction_proba[0][1]}')
+        
+        # Display feature importances
+        feature_importances = trained_model.named_steps['classifier'].feature_importances_
+        importance_df = pd.DataFrame({'Feature': st.session_state['selected_features'], 'Importance': feature_importances})
+        importance_df = importance_df.sort_values(by='Importance', ascending=False)
+        st.write('Feature Importances:')
+        st.write(importance_df)
 
 if __name__ == '__main__':
     Show_Predictions()
