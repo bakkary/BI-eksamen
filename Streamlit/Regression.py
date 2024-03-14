@@ -10,7 +10,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
 
 def show_Regression():
-    st.title('Linear Regression')
+    st.title('Regression and clustering')
     st.write("On this page, we will take a look at the dataset and try to visualize it. We will use the data to create some graphs and see if we can find any patterns or trends.")
 
     # Load your DataFrame

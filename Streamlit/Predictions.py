@@ -75,6 +75,7 @@ def train_model(df, selected_features):
 
 def Show_Predictions():
     st.title('AI Predictions - Focusing on C40 Membership')
+    st.write('This app uses a Random Forest Classifier to predict whether a city is eligible to join the C40 network based on various features.')
     df = load_data()
 
     if 'selected_features' not in st.session_state:
