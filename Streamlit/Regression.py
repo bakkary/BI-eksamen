@@ -82,7 +82,7 @@ def show_Regression():
     # Scatterplot
     st.title('Scatterplot')
     current_dir = os.path.dirname(__file__)  # Gets the directory where the script is located
-    image_path = os.path.join(current_dir, "screenshots", "pic 1.png")
+    image_path = 'screenshots\pic 1.png'
     st.image(image_path, caption="Caption for the image", use_column_width=True)
     st.write("Our error value is: 1.6936110240878405e-13")
     st.write("We got a test score of 1,0")
@@ -90,28 +90,28 @@ def show_Regression():
     # Linear Regression
     st.title('Linear Regression ')
     current_dir = os.path.dirname(__file__)  
-    image_path = os.path.join(current_dir, "screenshots", "pic 3.png")
+    image_path = 'screenshots\pic 3.png'
     st.image(image_path, caption="Caption for the image", use_column_width=True)
     st.write("We got a R2 value of 0.0014905377546974297.")
 
     # 2D clustering
     st.title('2D Clustering')
     current_dir = os.path.dirname(__file__)  
-    image_path = os.path.join(current_dir, "screenshots", "pic 4.png")
+    image_path = 'screenshots\pic 4.png'
     st.image(image_path, caption="Caption for the image", use_column_width=True)
     st.write("We are testing with 3 clusters. ")
 
     # 3D clustering
     st.title('3D clustering')
     current_dir = os.path.dirname(__file__)  
-    image_path = os.path.join(current_dir, "screenshots", "pic 5.png")
+    image_path = 'screenshots\pic 5.png'
     st.image(image_path, caption="Caption for the image", use_column_width=True)
     st.write("The diagram above makes a lot of sense of 3D.")
 
     # Cluster on the 5 most efficient parameters
     st.title('Cluster on the 5 most efficient parameters')
     current_dir = os.path.dirname(__file__)  
-    image_path = os.path.join(current_dir, "screenshots", "pic 6.png")
+    image_path = 'screenshots\pic 6.png'
     st.image(image_path, caption="Caption for the image", use_column_width=True)
     st.write("We are testing with 3 clusters. ")
     st.write("We got a K-means score: 1.7939260566779875e+29, which is a very high score and shows that the clusters is far from eachother.")
