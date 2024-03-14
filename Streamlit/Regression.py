@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from DataLoader import load_data
 from sklearn.cluster import KMeans
+import sklearn
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
@@ -15,6 +16,8 @@ def show_Regression():
 
     # Load your DataFrame
     df = load_data() 
+    
+    df.info()
 
     linreg = LinearRegression()
 
@@ -22,6 +25,9 @@ def show_Regression():
     st.title('Analysis of air quality in C40 cities using K-means clustering')
     feature_cols = ['City Latitude', 'City Longitude']
     X = df[feature_cols]
+
+    print(feature_cols)
+    print(X)
 
 
     kmeans = KMeans(n_clusters=3, random_state=42)
