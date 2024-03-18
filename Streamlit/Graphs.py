@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import pandas as pd
 import streamlit as st
 from DataLoader import load_data  # Adjust according to your DataLoader's actual location
@@ -76,3 +77,45 @@ def show_graphs():
     plt.ylabel('City')
     plt.xticks(rotation=90)
     st.pyplot(plt)  # Display the plot in Jupyter Notebook
+
+    
+
+   
+    # Apply log transformation to the column data and plot for 'AQI Value'
+    data_for_plot = np.log1p(df['AQI Value'])
+    plt.figure(figsize=(10, 6))
+    sns.histplot(data_for_plot, kde=True)
+    plt.title('Log-Transformed Distribution for AQI Value')
+    st.pyplot(plt)  # Display the plot in Streamlit
+    plt.clf()  # Clear the figure after displaying it
+
+    # Repeat the process for 'NO2 AQI Value'
+    data_for_plot = np.log1p(df['Total emissions (metric tonnes CO2e)'])
+    plt.figure(figsize=(10, 6))
+    sns.histplot(data_for_plot, kde=True)
+    plt.title('Log-Transformed Distribution for Total emissions (metric tonnes CO2e)')
+    st.pyplot(plt)
+    plt.clf()
+
+    # Repeat the process for 'PM2.5 AQI Value'
+    data_for_plot = np.log1p(df['PM2.5 AQI Value'])
+    plt.figure(figsize=(10, 6))
+    sns.histplot(data_for_plot, kde=True)
+    plt.title('Log-Transformed Distribution for PM2.5 AQI Value')
+    st.pyplot(plt)
+    plt.clf()
+
+    # And finally for 'GDP'
+    data_for_plot = np.log1p(df['GDP'])
+    plt.figure(figsize=(10, 6))
+    sns.histplot(data_for_plot, kde=True)
+    plt.title('Log-Transformed Distribution for GDP')
+    st.pyplot(plt)
+    plt.clf()
+
+
+
+
+    
+
+

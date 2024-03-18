@@ -57,8 +57,9 @@ def train_model(df, selected_features):
     report = classification_report(y_test, y_pred)
     conf_matrix = confusion_matrix(y_test, y_pred)
 
-    st.write(f"Model trained successfully with accuracy: {accuracy}")
-    st.text(report)
+    st.write(f"Model trained successfully with accuracy: {accuracy:.4f}")  # Formatted for precision
+    st.text("Classification Report:\n" + report)  # Use st.text for preformatted text
+
 
     # Plotting confusion matrix
     fig, ax = plt.subplots()
@@ -144,6 +145,7 @@ def Show_Predictions():
             importance_df = importance_df.sort_values(by='Importance', ascending=False)
             st.write('Feature Importances:')
             st.write(importance_df)
+            
         
         except ValueError:
             st.warning("Some input values are missing, which may affect the accuracy of the prediction.")
