@@ -146,7 +146,7 @@ def Show_Predictions():
             st.write(importance_df)
         
         except ValueError:
-            st.warning("Some input values are missing, which may affect the accuracy of the prediction.")
+            st.warning("Some input values can be missing, which may affect the accuracy of the prediction.")
 
 if __name__ == '__main__':
     Show_Predictions()
