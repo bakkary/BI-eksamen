@@ -11,6 +11,7 @@ from sklearn.impute import SimpleImputer
 import joblib
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, recall_score
 
 # Your DataLoader function
 @st.cache_data
@@ -57,8 +58,12 @@ def train_model(df, selected_features):
     report = classification_report(y_test, y_pred)
     conf_matrix = confusion_matrix(y_test, y_pred)
 
-    st.write(f"Model trained successfully with accuracy: {accuracy}")
-    st.text(report)
+     # Calculate recall
+    recall = recall_score(y_test, y_pred)
+
+    st.write(f"Model trained successfully with accuracy: {accuracy:.4f}")  # Formatted for precision
+    st.write(f"Recall: {recall:.4f}")  # Formatted for precision
+    st.text("Classification Report:\n" + report)  # Use st.text for preformatted text
 
     # Plotting confusion matrix
     fig, ax = plt.subplots()
